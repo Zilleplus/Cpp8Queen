@@ -1,21 +1,14 @@
-#ifndef SOLVER_H
-#define SOLVER_H
+struct Solver {
+    template <typename TBoard>
+    auto static SolveOneStep(const TBoard& board) {
+        auto currentCost = cost(board);
 
-#include "SteepestDescent.hpp"
-#include "moveGenerator.hpp"
+        SteepestDescent<MoveOperation, TBoard> algo(currentCost, board);
 
-struct Solver{
-    template<typename TBoard>
-    auto static constexpr SolveOneStep(TBoard&& board)
-    {
-        auto moves = GenerateMoves(board);
-        using outputType = typename std::optional<decltype(*(moves.begin))>;
+        MoveGenerator gen(board);
 
-        return SteepestDescent::FindLowest(
-                board,
-                moves.begin,
-                moves.end);
+        gen.generate(algo);
+
+        return algo.move();
     }
 };
-
-#endif
